@@ -1,7 +1,7 @@
 # urls.py
 from django.urls import path
-from product.views import amazon_product_view
+from product.views import product_details_view
 
 urlpatterns = [
-    path('', amazon_product_view, name='amazon_product'),
+    path('', product_details_view, name='amazon_product'),
 ]

@@ -5,18 +5,18 @@
 <head>
 
     <!-- Include JavaScript for color modes -->
-    <script src="/static/js/color-modes.js"></script>
+    <script src="{% static 'js/color-modes.js' %}"></script>
     <title> Info Scrapper </title>
-	<link rel="apple-touch-icon" sizes="180x180" href="/static/logo/apple-touch-icon.png">
-	<link rel="icon" type="image/png" sizes="32x32" href="/static/logo/favicon-32x32.png">
-	<link rel="icon" type="image/png" sizes="16x16" href="/static/logo/favicon-16x16.png">
-	<link rel="icon" type="image/x-icon" href="/static/logo/favicon.ico">
-	<link rel="manifest" href="./static/logo/site.webmanifest">
+	<link rel="apple-touch-icon" sizes="180x180" href="{% static 'logo/apple-touch-icon.png' %}">
+	<link rel="icon" type="image/png" sizes="32x32" href="{% static 'logo/favicon-32x32.png' %}">
+	<link rel="icon" type="image/png" sizes="16x16" href="{% static 'logo/favicon-16x16.png' %}">
+	<link rel="icon" type="image/x-icon" href="{% static 'logo/favicon.ico' %}">
+	<link rel="manifest" href="{% static 'logo/site.webmanifest' %}">
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="/static/libraries/aos/aos.css">
-    <link rel="stylesheet" href="/static/css/main.min.rtl.css">
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="{% static 'libraries/aos/aos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.min.rtl.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
         <style>
         .centered {
             max-width: 600px;
@@ -29,7 +29,7 @@
 	    <nav class="navbar navbar-expand-xl" aria-label="Offcanvas navbar large">
 	        <div class="container py-1">
 	            <a href="" class="navbar-brand">
-	                <img src="/static/logo/logo.png" height="40" alt="logo">
+	                <img src="{% static 'logo/logo.png' %}" height="40" alt="logo">
 	            </a>
 
 	            <div class="dropdown ms-3 order-last">
@@ -62,7 +62,7 @@
 	                    <li style="color: var(--bs-tertiary-bg);">
 	                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
 	                            class="mt-n1 d-inline-block position-absolute top-0 end-0 translate-middle" viewBox="0 0 16 16">
-	                            <path class="carret-dropdown-path" d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+	                            <path class="carret-dropdown-path" d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"></path>
 	                        </svg>
 	                    </li>
 
@@ -160,7 +160,7 @@
 	    </div>
 	</div>
 <div class="p-5 h-100 d-flex flex-column bg-body-tertiary shadow rounded-4 centered">
-<form method="post">
+<form method="GET">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="btn btn-primary">Fetch Product Details</button>
@@ -172,7 +172,7 @@
     <h2 class="mb-3 text-primary">Product Title: {{ product_title }}</h2>
     <p class="mb-4 h4 text-success">Product Price: ₹{{ product_price }}</p>
     <div class="mx-auto" style="max-width: 300px;">
-        <img src="{{ product_image }}" alt="Product Image" class="img-fluid rounded-4">
+        <img src="{{ product_image_url }}" alt="Product Image" class="img-fluid rounded-4">
     </div>
 </div>
 
@@ -185,9 +185,9 @@
 
 
 	<!-- Bootstrap JavaScript: Bundle with Popper -->
-	<script src="/static/libraries/bootstrap/js/bootstrap.bundle.min.js"></script>
-	<script src="/static/libraries/aos/aos.js"></script>
-	<script src="/static/js/scripts.js"></script>
+	<script src="{% static 'libraries/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+	<script src="{% static 'libraries/aos/aos.js' %}"></script>
+	<script src="{% static 'js/scripts.js' %}"></script>
 
 
 </html>
