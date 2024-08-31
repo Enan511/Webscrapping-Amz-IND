@@ -1,7 +1,6 @@
-# Scripts.py
-import re
 import requests as req
 from bs4 import BeautifulSoup
+import csv
 
 
 class AmazonScraper:
@@ -17,18 +16,9 @@ class AmazonScraper:
         }
         self.soup = None
 
-    def clean_url(self):
-        pattern = r"(https:\/\/www\.amazon\.[a-z\.]+\/[^\/]+\/dp\/[^\/]+\/)"
-        clean_link = re.search(pattern, self.url)
-        return clean_link.group(0) if clean_link else None
-
     def fetch_page(self):
-        clean_link = self.clean_url()
-        if not clean_link:
-            raise ValueError("Invalid URL format.")
-
         try:
-            response = req.get(clean_link, headers=self.headers)
+            response = req.get(self.url, headers=self.headers)
             response.raise_for_status()
             self.soup = BeautifulSoup(response.content, 'html.parser')
         except req.exceptions.RequestException as e:
@@ -62,3 +52,15 @@ class AmazonScraper:
             "price": self.get_product_price(),
             "image_url": self.get_product_image()
         }
+
+
+def scrape_products_from_csv(csv_file_path):
+    scraped_data = []
+    with open(csv_file_path, newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            url = row[0]  # Assuming the URL is in the first column
+            scraper = AmazonScraper(url)
+            product_details = scraper.scrape_product_details()
+            scraped_data.append(product_details)
+    return scraped_data

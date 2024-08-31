@@ -1,28 +1,43 @@
-# views.py
-from django.shortcuts import render
-from .forms import AmazonURLForm
-from .scripts import AmazonScraper  # Adjust the import based on where Scripts.py is located
+from django.shortcuts import render, redirect
+from .forms import UploadCSVForm
+from .models import Product
+from .scripts import scrape_products_from_csv
 
 
-def product_details_view(request):
-    if request.method == 'GET':
-        form = AmazonURLForm(request.GET)
+def upload_csv(request):
+    if request.method == 'POST':
+        form = UploadCSVForm(request.POST, request.FILES)
         if form.is_valid():
-            url = form.cleaned_data['url']
-            scraper = AmazonScraper(url)
-            product_details = scraper.scrape_product_details()
+            csv_file = form.cleaned_data['csv_file']
+            # Saved the uploaded file temporarily
+            with open('temp.csv', 'wb+') as destination:
+                for chunk in csv_file.chunks():
+                    destination.write(chunk)
 
-            context = {
-                "form": form,
-                "product_title": product_details['title'],
-                "product_price": product_details['price'],
-                "product_image_url": product_details['image_url'],
-            }
-            return render(request, 'product_details.html', context)
-        else:
-            context = {"form": form}
+            # Scraped product details from the CSV
+            scraped_data = scrape_products_from_csv('temp.csv')
+
+            # Saved data to the database
+            for data in scraped_data:
+                Product.objects.create(
+                    title=data['title'],
+                    price=data['price'],
+                    image_url=data['image_url']
+                )
+            return redirect('product_list')
     else:
-        form = AmazonURLForm()
-        context = {"form": form}
+        form = UploadCSVForm()
+    context = {'form': form,'title':'Info Scrapper'}
+    return render(request, 'upload_csv.html', context)
 
-    return render(request, 'product_details.html', context)
+
+def product_list(request):
+    products = Product.objects.all()
+    context = {'products': products, 'title': 'Product List'}
+    return render(request, 'product_list.html', context)
+
+
+def product_detail(request, pk):
+    product = Product.objects.get(pk=pk)
+    context = {'product': product, 'title': 'Product Detail'}
+    return render(request, 'product_details.html', {'product': product})
