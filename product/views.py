@@ -22,7 +22,8 @@ def upload_csv(request):
                 Product.objects.create(
                     title=data['title'],
                     price=data['price'],
-                    image_url=data['image_url']
+                    image_url=data['image_url'],
+                    description=data['description'],
                 )
             return redirect('product_list')
     else:
@@ -40,4 +41,4 @@ def product_list(request):
 def product_detail(request, pk):
     product = Product.objects.get(pk=pk)
     context = {'product': product, 'title': 'Product Detail'}
-    return render(request, 'product_details.html', {'product': product})
+    return render(request, 'product_details.html', context)

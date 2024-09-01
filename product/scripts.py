@@ -45,12 +45,23 @@ class AmazonScraper:
         except (AttributeError, KeyError):
             return "Product image not found."
 
+    def get_product_details(self):
+        try:
+            # Product details are in a table or list under certain classes or IDs.
+            details_section = self.soup.find(id="feature-bullets")
+            details = details_section.find_all('span', class_='a-list-item')
+            formatted_details = "\n".join([f"- {detail.get_text(strip=True)}" for detail in details])
+            return formatted_details if formatted_details else "Product details not found."
+        except AttributeError:
+            return ["Product details not found."]
+
     def scrape_product_details(self):
         self.fetch_page()
         return {
             "title": self.get_product_title(),
             "price": self.get_product_price(),
-            "image_url": self.get_product_image()
+            "image_url": self.get_product_image(),
+            "description": self.get_product_details(),
         }
 
 
