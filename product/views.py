@@ -1,7 +1,24 @@
-from django.shortcuts import render, redirect
+import threading
+from django.shortcuts import render
 from .forms import UploadCSVForm
 from .models import Product
 from .scripts import scrape_products_from_csv
+
+
+def background_scrape_and_save(csv_file_path):
+    # Scrape product details from the CSV
+    scraped_data = scrape_products_from_csv(csv_file_path)
+
+    # Save data to the database, using get_or_create to avoid duplicates
+    for data in scraped_data:
+        Product.objects.get_or_create(
+            title=data['title'],
+            defaults={
+                'price': data['price'],
+                'image_url': data['image_url'],
+                'description': data['description'],
+            }
+        )
 
 
 def upload_csv(request):
@@ -9,26 +26,21 @@ def upload_csv(request):
         form = UploadCSVForm(request.POST, request.FILES)
         if form.is_valid():
             csv_file = form.cleaned_data['csv_file']
-            # Saved the uploaded file temporarily
-            with open('temp.csv', 'wb+') as destination:
+            # Save the uploaded file temporarily
+            temp_csv_path = 'temp.csv'
+            with open(temp_csv_path, 'wb+') as destination:
                 for chunk in csv_file.chunks():
                     destination.write(chunk)
 
-            # Scraped product details from the CSV
-            scraped_data = scrape_products_from_csv('temp.csv')
+            # Start the web scraping in a separate thread
+            scrape_thread = threading.Thread(target=background_scrape_and_save, args=(temp_csv_path,))
+            scrape_thread.start()
 
-            # Saved data to the database
-            for data in scraped_data:
-                Product.objects.create(
-                    title=data['title'],
-                    price=data['price'],
-                    image_url=data['image_url'],
-                    description=data['description'],
-                )
-            return redirect('product_list')
+            # Show the "Thanks for the upload" message immediately
+            return render(request, 'upload_confirmation.html', {'title': 'Upload Confirmation'})
     else:
         form = UploadCSVForm()
-    context = {'form': form,'title':'Info Scrapper'}
+    context = {'form': form, 'title': 'Info Scrapper'}
     return render(request, 'upload_csv.html', context)
 
 
